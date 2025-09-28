@@ -1,0 +1,36 @@
+/* src/index.css */
+:root {
+  --bg-color: #ffffff;
+  --bg-color-secondary: #f0f0f0;
+  --bg-color-hover: #e9e9e9;
+  --text-color: #1a1a1a;
+  --border-color: #cccccc;
+  --province-line-color: #2f4f4f;
+  --city-line-color: var(--province-line-color); /* 市线跟省线一致 */
+
+  /* --- 【新增】主操作按钮颜色 --- */
+  --primary-color: #007bff;
+  --primary-color-hover: #0069d9;
+  --primary-text-color: #ffffff;
+}
+
+[data-theme='dark'] {
+  --bg-color: #121212;
+  --bg-color-secondary: #2a2a2a;
+  --bg-color-hover: #3a3a3a;
+  --text-color: #e0e0e0;
+  --border-color: #444444;
+  --province-line-color: #a9a9a9;
+  --city-line-color: var(--province-line-color); /* 市线跟省线一致 */
+
+  /* --- 【新增】主操作按钮颜色 --- */
+  --primary-color: #007bff;
+  --primary-color-hover: #008cff;
+  --primary-text-color: #ffffff;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  transition: background-color 0.3s;
+}

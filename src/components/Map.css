@@ -1,0 +1,27 @@
+/* src/components/Map.css */
+
+.map-tooltip {
+  background-color: var(--bg-color-secondary);
+  color: var(--text-color);
+  border: none;
+  box-shadow: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.leaflet-tooltip-top::before,
+.leaflet-tooltip-bottom::before,
+.leaflet-tooltip-left::before,
+.leaflet-tooltip-right::before {
+  content: none;
+}
+
+.leaflet-container {
+  outline: none;
+}
+
+.leaflet-container path {
+  outline: none;
+}

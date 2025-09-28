@@ -1,0 +1,67 @@
+:root {
+  --theme-toggle-shadow-color: rgba(0, 0, 0, 0.2); /* 浅色主题默认灰色阴影 */
+}
+
+[data-theme="dark"] {
+  --theme-toggle-shadow-color: rgba(255, 255, 255, 0.3); /* 深色主题白色阴影 */
+}
+
+.theme-toggle-wrapper {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px var(--theme-toggle-shadow-color);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.theme-toggle-button {
+  background-color: rgba(var(--bg-color-secondary-rgb), 0.8);
+  color: var(--text-color);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.theme-toggle-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px var(--theme-toggle-shadow-color);
+}
+
+.palette-label {
+  margin-left: 4px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.province-label {
+  font-size: 18px;
+  font-weight: bold;
+  position: relative;
+}
+
+.province-label.slashed::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background-color: var(--text-color);
+  opacity: 0.7;
+  transform: translateY(-50%) rotate(45deg);
+}

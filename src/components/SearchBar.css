@@ -1,0 +1,185 @@
+/* --- 搜索组件样式 (改造后) --- */
+
+/* 变量定义 */
+:root {
+  --search-bg: rgba(255, 255, 255, 0.1);                 /* 统一背景为半透明 */
+  --search-border-color: rgba(255, 255, 255, 0.18);        /* 统一边框颜色 */
+  --search-border-radius: 16px;                          /* 统一圆角为 16px */
+  --theme-toggle-shadow-color: rgba(0, 0, 0, 0.2);       /* 引入阴影变量 */
+  
+  --search-focus-border-color: #007bff;                  /* 聚焦时边框颜色 */
+  --search-text-color: #222;
+  --search-placeholder-color: rgba(0, 0, 0, 0.5);
+  --search-padding: 12px 24px;
+  --search-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  /* 在深色模式下，核心的透明外观保持一致 */
+  --search-bg: rgba(255, 255, 255, 0.1);
+  --search-border-color: rgba(255, 255, 255, 0.18);
+  --theme-toggle-shadow-color: rgba(255, 255, 255, 0.3); /* 深色主题阴影 */
+
+  --search-focus-border-color: #58a6ff;
+  --search-text-color: #eee;
+  --search-placeholder-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 统一字体和 box-sizing 设置 */
+.search-container,
+.search-container input,
+.search-results,
+.search-results li,
+.search-item-content,
+.item-name,
+.item-city {
+  font-family: "Arial", "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  box-sizing: border-box;
+}
+
+/* 搜索框主体 - 应用磨砂玻璃效果 */
+.search-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  width: 400px;
+  background: var(--search-bg);
+  backdrop-filter: blur(10px); /* 核心：背景模糊效果 */
+  -webkit-backdrop-filter: blur(10px); /* 兼容 Safari */
+  border-radius: var(--search-border-radius);
+  border: 1px solid var(--search-border-color);
+  box-shadow: 0 3px 10px var(--theme-toggle-shadow-color); /* 核心：统一阴影 */
+  transition: var(--search-transition);
+  overflow: hidden; /* 防止内部元素溢出圆角 */
+}
+
+/* 聚焦时改变边框颜色以增强反馈 */
+.search-container:focus-within {
+  border-color: var(--search-focus-border-color);
+}
+
+.search-container input {
+  width: 100%;
+  padding: var(--search-padding);
+  border: none;
+  background: transparent; /* 输入框本身透明 */
+  color: var(--search-text-color);
+  outline: none;
+  transition: var(--search-transition);
+}
+
+.search-container input::placeholder {
+  color: var(--search-placeholder-color);
+  transition: var(--search-transition);
+}
+
+.search-container input:focus::placeholder {
+  opacity: 0;
+}
+
+/* 搜索结果列表 - 使其融入容器 */
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  transition: var(--search-transition);
+  /* 移除了独立的背景和边框，使其成为父容器的一部分 */
+}
+
+/* 隐藏滚动条 */
+.search-results::-webkit-scrollbar {
+  display: none;
+}
+.search-results {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 列表项 */
+.search-results li {
+  padding: var(--search-padding);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--search-transition);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 调整分割线以适应透明背景 */
+  color: var(--search-text-color);
+}
+
+.search-results li:last-child {
+  border-bottom: none;
+}
+
+/* 列表项交互效果 - 调整为更适合透明背景的颜色 */
+.search-results li:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.search-results li.selected {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* 特殊项背景 (保持不变，但请在实际效果中测试视觉表现) */
+.search-results li.mtb-item-bg-dakehu {
+  background: linear-gradient(to right, rgba(0, 123, 255, 0.25), transparent);
+}
+.search-results li.mtb-item-bg-dakehu:hover,
+.search-results li.mtb-item-bg-dakehu.selected {
+  background: linear-gradient(to right, rgba(0, 123, 255, 0.35), transparent);
+}
+
+.search-results li.mtb-item-bg-zhongdian {
+  background: linear-gradient(to right, rgba(40, 167, 69, 0.25), transparent);
+}
+.search-results li.mtb-item-bg-zhongdian:hover,
+.search-results li.mtb-item-bg-zhongdian.selected {
+  background: linear-gradient(to right, rgba(40, 167, 69, 0.35), transparent);
+}
+
+.search-results li.mtb-item-bg-qianli {
+  background: linear-gradient(to right, rgba(253, 126, 20, 0.25), transparent);
+}
+.search-results li.mtb-item-bg-qianli:hover,
+.search-results li.mtb-item-bg-qianli.selected {
+  background: linear-gradient(to right, rgba(253, 126, 20, 0.35), transparent);
+}
+
+.search-results li.mtb-item-bg-xiaokehu {
+  background: linear-gradient(to right, rgba(108, 117, 125, 0.25), transparent);
+}
+.search-results li.mtb-item-bg-xiaokehu:hover,
+.search-results li.mtb-item-bg-xiaokehu.selected {
+  background: linear-gradient(to right, rgba(108, 117, 125, 0.35), transparent);
+}
+
+/* 内容对齐 */
+.search-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 12px;
+}
+
+.item-city {
+  flex-shrink: 0;
+  color: var(--search-text-color);
+  opacity: 0.7;
+  font-size: 13px;
+}
+
