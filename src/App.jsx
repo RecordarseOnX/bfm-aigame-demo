@@ -7,7 +7,6 @@ import MTBModal from './components/MTBModal';
 import SearchBar from './components/SearchBar';
 import { mtbData } from './mockData';
 import useOnClickOutside from './hooks/useOnClickOutside';
-// 1. 引入 Sparkles 图标用于 AI 弹窗
 import { Sparkles } from 'lucide-react';
 import './App.css';
 
@@ -18,12 +17,10 @@ function App() {
   const [palette, setPalette] = useState(() => localStorage.getItem('palette') || 'purple');
   const [showProvince, setShowProvince] = useState(true);
   const [zoomToCity, setZoomToCity] = useState(null);
-  // 2. 新增 state 用于控制 AI 弹窗
   const [isAIPopupOpen, setIsAIPopupOpen] = useState(false);
   const drawerRef = useRef();
   const modalRef = useRef();
 
-  // ... (其余代码，如 customerPriority, allItems, handleCityClick, handleSearchSelect 等保持不变)
   const customerPriority = { '大客户': 1, '重点客户': 2, '潜力客户': 3, '小客户': 4 };
   const allItems = useMemo(() => {
     const cities = Object.keys(mtbData).map(city => ({ type: 'city', name: city }));
@@ -59,19 +56,26 @@ function App() {
   };
 
   useOnClickOutside(drawerRef, () => setSelectedCityData(null), [modalRef]);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // --- 【新增】将 palette 状态同步到 DOM，激活 CSS 变量 ---
   useEffect(() => {
+    document.documentElement.setAttribute('data-palette', palette);
     localStorage.setItem('palette', palette);
   }, [palette]);
 
   const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+
+  // --- 【修改】加入 'ink' 配色到切换逻辑中 ---
   const togglePalette = () => {
-    const order = ['red', 'blue', 'purple'];
+    const order = ['red', 'blue', 'purple', 'ink'];
     setPalette(order[(order.indexOf(palette) + 1) % order.length]);
   };
+
   const toggleShowProvince = () => setShowProvince(prev => !prev);
 
   const { totalThisYearOrders, totalThisQuarterOrders } = useMemo(() => {
@@ -90,13 +94,9 @@ function App() {
       <div className="left-bottom-stats">
         {['今年总订单', '本季度总订单'].map((label, idx) => {
           const value = idx === 0 ? totalThisYearOrders : totalThisQuarterOrders;
-          const gradientMap = {
-            red: 'linear-gradient(135deg, #ff7e5f, #feb47b)',
-            blue: 'linear-gradient(135deg, #36d1dc, #5b86e5)',
-            purple: 'linear-gradient(135deg, #4e54c8, #8f94fb)',
-          };
+          // --- 【修改】移除所有内联样式和 gradientMap ---
           return (
-            <div key={label} className="stat-card" style={{ background: gradientMap[palette] }}>
+            <div key={label} className="stat-card">
               <div className="stat-label">{label}</div>
               <div className="stat-value">{value.toLocaleString()}</div>
             </div>
@@ -111,7 +111,6 @@ function App() {
         togglePalette={togglePalette}
         showProvince={showProvince}
         toggleShowProvince={toggleShowProvince}
-        // 3. 传递打开 AI 弹窗的函数
         onAIBtnClick={() => setIsAIPopupOpen(true)}
       />
 
@@ -139,7 +138,6 @@ function App() {
         onClose={() => setModalMtb(null)}
       />
 
-      {/* 4. 在这里渲染新的 AI 弹窗 */}
       {isAIPopupOpen && (
         <div 
           className="popup-overlay" 
@@ -149,7 +147,7 @@ function App() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <Sparkles className="popup-icon" size={20} />
             <p className="popup-text">
-              点击该按钮即可总结全国各市以及总体的商业分析。
+              点击该按钮可通过AI问答快速获取所需信息，并进行互动。
             </p>
           </div>
         </div>

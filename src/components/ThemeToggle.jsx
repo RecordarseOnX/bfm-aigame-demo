@@ -1,37 +1,33 @@
 // src/components/ThemeToggle.jsx
 import React from 'react';
-// 1. 从 lucide-react 额外导入 Sparkles 图标
 import { Sun, Moon, Droplet, Sparkles } from 'lucide-react';
 import './ThemeToggle.css';
 
 function ThemeToggle({ theme, palette, toggleTheme, togglePalette, showProvince, toggleShowProvince, onAIBtnClick }) {
-  // 调色板颜色映射，现在 AI 按钮也会使用它
-  const paletteColors = {
-    red: '#ef3b2c',
-    blue: '#4292c6',
-    purple: '#807dba',
-  };
-
   return (
     <div className="theme-toggle-wrapper">
-      {/* 主题切换 */}
+      {/* 主题切换按钮 */}
       <button onClick={toggleTheme} className="theme-toggle-button" aria-label="Toggle theme">
-        {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+        <Moon size={24} className="icon-moon" />
+        <Sun size={24} className="icon-sun" />
       </button>
 
-      {/* 调色板切换 */}
+      {/* 调色板切换按钮 */}
       <button onClick={togglePalette} className="theme-toggle-button" aria-label="Toggle palette">
-        <Droplet size={20} color={paletteColors[palette] || '#ef3b2c'} />
+        <Droplet size={24} className="palette-icon" />
       </button>
 
-      {/* 省级图层控制按钮 */}
+      {/* 省份/市图层切换按钮 */}
       <button onClick={toggleShowProvince} className="theme-toggle-button" aria-label="Toggle province layer">
-        <span className={`province-label ${showProvince ? '' : 'slashed'}`}>省</span>
+        {/* --- 【核心修改 #3】根据 showProvince 状态显示不同文字 --- */}
+        <span className="province-label">
+          {showProvince ? '省' : '市'}
+        </span>
       </button>
 
-      {/* 2. 修改：AI 按钮现在使用 Sparkles 图标，并根据 palette 动态着色 */}
+      {/* AI 分析按钮 */}
       <button onClick={onAIBtnClick} className="theme-toggle-button" aria-label="AI Analysis">
-        <Sparkles size={20} color={paletteColors[palette] || '#807dba'} />
+        <Sparkles size={24} className="palette-icon" />
       </button>
     </div>
   );

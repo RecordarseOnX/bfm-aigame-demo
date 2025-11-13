@@ -1,10 +1,4 @@
-:root {
-  --theme-toggle-shadow-color: rgba(0, 0, 0, 0.2); /* 浅色主题默认灰色阴影 */
-}
-
-[data-theme="dark"] {
-  --theme-toggle-shadow-color: rgba(255, 255, 255, 0.3); /* 深色主题白色阴影 */
-}
+/* src/components/ThemeToggle.css */
 
 .theme-toggle-wrapper {
   position: fixed;
@@ -13,17 +7,25 @@
   z-index: 1001;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--theme-toggle-shadow-color);
+  backdrop-filter: none;
+  transition: background 0.3s, border 0.3s, box-shadow 0.3s;
+}
+
+[data-theme="dark"] .theme-toggle-wrapper {
+  background: var(--glass-bg-color);
+  border: 1px solid var(--glass-border-color);
   backdrop-filter: blur(10px);
-  padding: 10px;
-  border-radius: 16px;
-  box-shadow: 0 3px 10px var(--theme-toggle-shadow-color);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .theme-toggle-button {
-  background-color: rgba(var(--bg-color-secondary-rgb), 0.8);
+  background-color: rgba(var(--bg-color-secondary-rgb), 0.7);
   color: var(--text-color);
   border: none;
   width: 50px;
@@ -33,35 +35,40 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
   position: relative;
+  overflow: hidden;
 }
 
 .theme-toggle-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px var(--theme-toggle-shadow-color);
+  box-shadow: 0 5px 8px var(--theme-toggle-shadow-color);
+  background-color: rgba(var(--bg-color-secondary-rgb), 0.9);
 }
 
-.palette-label {
-  margin-left: 4px;
-  font-size: 12px;
-  text-transform: capitalize;
+.palette-icon {
+  color: var(--palette-primary);
+  transition: color 0.3s ease;
 }
+
+.theme-toggle-button:hover .palette-icon {
+  color: var(--palette-primary-hover);
+}
+
+.theme-toggle-button .icon-sun,
+.theme-toggle-button .icon-moon {
+  position: absolute;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+.icon-sun { transform: scale(1); opacity: 1; }
+.icon-moon { transform: scale(0); opacity: 0; }
+[data-theme="dark"] .icon-sun { transform: scale(0); opacity: 0; }
+[data-theme="dark"] .icon-moon { transform: scale(1); opacity: 1; }
+
 
 .province-label {
   font-size: 18px;
   font-weight: bold;
   position: relative;
-}
-
-.province-label.slashed::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 2px;
-  background-color: var(--text-color);
-  opacity: 0.7;
-  transform: translateY(-50%) rotate(45deg);
+  user-select: none;
 }

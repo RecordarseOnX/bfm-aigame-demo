@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { MapContainer, GeoJSON, useMap } from "react-leaflet";
 import L from "leaflet";
 import { provinceCityMap } from "./provinceCityMap";
+import * as topojson from "topojson-client";
 import "leaflet/dist/leaflet.css";
 import "./Map.css";
 
@@ -22,9 +23,14 @@ const palettes = {
     light: ["#f5f0ff", "#e5d9ff", "#d0bfff", "#b3a2ff", "#9e87ff", "#8a6dff", "#9e47ff"],
     dark: ["#2d0d4a", "#3f007d", "#542788", "#6a51a3", "#807dba", "#9e9ac8", "#b84dff"]
   },
+  // --- 【修改】将 gray 重命名为 ink 以保持一致 ---
+  ink: {
+    light: ["#f7f7f7", "#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525"],
+    dark: ["#252525", "#404040", "#636363", "#828282", "#a1a1a1", "#d4d4d4", "#f0f0f0"]
+  },
 };
 
-// 颜色映射函数
+// ... (getHeatColor, formatNumber, ZoomHandler, ZoomToCity 函数保持不变)
 function getHeatColor(value, min, max, theme, paletteName, useLogScale = false) {
   const palette = palettes[paletteName] || palettes.red;
   const colors = palette[theme] || palette.light;
@@ -54,12 +60,10 @@ function getHeatColor(value, min, max, theme, paletteName, useLogScale = false) 
   return interpolateColor(colors[segment], colors[segment + 1], segmentRatio);
 }
 
-// 千位逗号格式化
 function formatNumber(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// 缩放层级切换
 function ZoomHandler({ setActiveLayer }) {
   const map = useMap();
   useEffect(() => {
@@ -73,7 +77,6 @@ function ZoomHandler({ setActiveLayer }) {
   return null;
 }
 
-// 搜索聚焦城市
 function ZoomToCity({ cityName, cityGeojsonData }) {
   const map = useMap();
   useEffect(() => {
@@ -88,27 +91,38 @@ function ZoomToCity({ cityName, cityGeojsonData }) {
   return null;
 }
 
-// 主 Map 组件（包装 MapContainer）
+
+// 主 Map 组件
 function Map({ onCityClick, theme = "light", mtbData, palette = "red", showProvince = true, zoomToCity }) {
   const [cityGeojsonData, setCityGeojsonData] = useState(null);
   const [provinceGeojsonData, setProvinceGeojsonData] = useState(null);
   const [activeLayer, setActiveLayer] = useState("province");
 
   useEffect(() => {
-    fetch("/中国_市.geojson")
+    fetch("/中国_市.json") // 确保这个文件放在 public 目录下
       .then(res => res.json())
-      .then(data => setCityGeojsonData(data));
+      .then(data => {
+        // 【请确认!】这里的 '中国_市' 是否和您在文件中找到的对象名一致？
+        const geojson = topojson.feature(data, data.objects['中国_市']);
+        setCityGeojsonData(geojson);
+      })
+      .catch(error => console.error("加载市级地图数据失败:", error));
 
-    fetch("/中国_省.geojson")
+    // 加载省级数据
+    fetch("/中国_省.json") // 确保这个文件放在 public 目录下
       .then(res => res.json())
-      .then(data => setProvinceGeojsonData(data));
+      .then(data => {
+        // 【请确认!】这里的 '中国_省' 是否和您在文件中找到的对象名一致？
+        const geojson = topojson.feature(data, data.objects['中国_省']);
+        setProvinceGeojsonData(geojson);
+      })
+      .catch(error => console.error("加载省级地图数据失败:", error));
   }, []);
 
   useEffect(() => {
     if (!showProvince) setActiveLayer("city");
   }, [showProvince]);
 
-  // city 层热力图
   const cityHeatMap = useMemo(() => {
     if (!mtbData) return {};
     const heatMap = {};
@@ -119,11 +133,9 @@ function Map({ onCityClick, theme = "light", mtbData, palette = "red", showProvi
     return heatMap;
   }, [mtbData]);
 
-  // 省层热力图
   const provinceHeatMap = useMemo(() => {
     const map = {};
     if (!provinceCityMap) return map;
-
     provinceCityMap.forEach((cities, province) => {
       let mtbCount = 0, totalOrders = 0;
       cities.forEach(city => {
@@ -146,10 +158,11 @@ function Map({ onCityClick, theme = "light", mtbData, palette = "red", showProvi
   const provinceMinHeat = provinceValues.length > 0 ? Math.min(...provinceValues) : 0;
   const provinceMaxHeat = provinceValues.length > 0 ? Math.max(...provinceValues) : 1;
 
-  const paletteEdgeColor = { red: "#b94a48", blue: "#2171b5", purple: "#6a51a3" };
+  // --- 【修改】添加 ink 配色的悬浮边框颜色 ---
+  const paletteEdgeColor = { red: "#b94a48", blue: "#2171b5", purple: "#6a51a3", ink: "#666666" };
   const hoverBorderColor = theme === "light" ? paletteEdgeColor[palette] || "#444" : "#fff";
 
-  // 城市图层
+  // ... (onEachCity 和 onEachProvince 函数保持不变)
   const onEachCity = (feature, layer) => {
     const cityName = feature.properties.name;
     const data = cityHeatMap[cityName] || { mtbCount: 0, totalOrders: 0 };
@@ -183,7 +196,6 @@ function Map({ onCityClick, theme = "light", mtbData, palette = "red", showProvi
     });
   };
 
-  // 省图层
   const onEachProvince = (feature, layer) => {
     const provinceName = feature.properties.name;
     const data = provinceHeatMap[provinceName] || { mtbCount: 0, totalOrders: 0 };
@@ -224,6 +236,21 @@ function Map({ onCityClick, theme = "light", mtbData, palette = "red", showProvi
       style={{ height: "100vh", width: "100%", backgroundColor: "var(--bg-color)" }}
       zoomControl={false}
       attributionControl={false}
+
+      // --- 【新增】优化缩放体验的关键属性 ---
+
+      // 1. 缩放吸附粒度 (最重要)
+      //    值越小，缩放越平滑。0.1 是一个很好的选择。
+      zoomSnap={0.1}
+
+      // 2. 每次缩放的幅度
+      //    建议和 zoomSnap 保持一致，让每次滚轮操作都感觉细腻。
+      zoomDelta={0.1}
+
+      // 3. (可选) 滚轮灵敏度
+      //    这个值定义了滚动多少像素等于一个缩放级别。值越大，滚轮缩放越“慢”、越不灵敏。
+      //    可以尝试 120 或 180 来获得更稳重的缩放手感。
+      wheelPxPerZoomLevel={120}
     >
       {showProvince && <ZoomHandler setActiveLayer={setActiveLayer} />}
       {cityGeojsonData && <ZoomToCity cityName={zoomToCity} cityGeojsonData={cityGeojsonData} />}
