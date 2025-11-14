@@ -201,6 +201,289 @@
   white-space: nowrap;
 }
 
+/* PDF 列表弹窗整体优化 */
+/* PDF 列表弹窗 */
+.pdf-list-popup {
+  width: 380px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: 12px;
+  align-items: center;  /* 让 90% 的项居中 */
+}
+
+.popup-title {
+  width: 100%;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  opacity: 0.95;
+}
+
+/* 每一行 PDF 占 90% 宽 */
+.pdf-item {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-color-secondary);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.18s ease, transform 0.15s ease;
+}
+
+/* 左侧区域：图标 + 名称 */
+.pdf-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  flex: 1; /* 左边占据剩余空间，实现左对齐 */
+}
+
+.pdf-icon {
+  color: #e04848;
+}
+
+/* 下载按钮固定在右侧 */
+.pdf-download-btn {
+  background: var(--brand-blue, #0066ff);
+  border: none;
+  padding: 6px 14px;
+  color: white;
+  border-radius: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.pdf-download-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
+
+/* 深色模式优化 */
+[data-theme='dark'] .pdf-item {
+  background: #2c2c2c;
+  border-color: #444;
+}
+[data-theme='dark'] .pdf-item:hover {
+  background: #3a3a3a;
+}
+[data-theme='dark'] .pdf-icon {
+  color: #ff6b6b;
+}
+
+
+/* AI 对话弹窗整体 */
+.ai-dialog-popup {
+  width: 100%;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dialog-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-left: 4px;
+}
+
+.dialog-bubble {
+  width: 92%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* 用户 & AI 一致宽度，左对齐 */
+.user-bubble {
+  background: var(--bg-color-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.ai-bubble {
+  background: var(--bg-color-secondary);
+  border: 1px solid var(--brand-blue, #0066ff);
+}
+
+/* AI 图标部分 */
+.ai-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* RAG 来源卡片 */
+.rag-source-card {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--brand-blue, #0066ff);
+  background: rgba(0, 102, 255, 0.08);
+  border-radius: 8px;
+}
+
+.rag-title {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+
+.rag-list div {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.ai-dialog-wrapper {
+  width: 420px;
+  max-width: 92%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dialog-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.user-row {
+  justify-content: flex-end;
+}
+
+.ai-row {
+  justify-content: flex-start;
+}
+
+.user-align {
+  text-align: right;
+}
+
+.ai-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.user-row .dialog-bubble {
+  max-width: 80%;
+}
+
+.ai-row .dialog-bubble {
+  max-width: 80%;
+}
+
+/* --- AI 对话框外部容器 --- */
+.ai-dialog-wrapper {
+  width: 900px;
+  height: 350px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 保证整体不超出 */
+}
+
+/* 横向布局容器 */
+.horizontal-dialog-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%; /* 让内部自己滚动 */
+  gap: 16px;
+}
+
+/* 左右比例：用户 2 / AI 3 */
+.user-section {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* 内部可滚动 */
+  padding-right: 8px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.ai-section {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* 内部可滚动 */
+  padding-left: 8px;
+}
+
+/* 标题 */
+.dialog-section-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+/* 用户/AI主题色 */
+.user-title {
+  color: #2563eb; /* 蓝色，现代感 */
+}
+.ai-title {
+  color: #16a34a; /* 绿色，智能感 */
+}
+
+/* 气泡样式 */
+.dialog-bubble {
+  background: #f8f9fa;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  border: 1px solid #e5e7eb;
+}
+
+/* 用户气泡颜色 */
+.user-bubble {
+  background: #e8f0fe;
+  border-color: #c9d7ff;
+}
+
+/* AI 气泡颜色 */
+.ai-bubble {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+/* RAG 来源卡片 */
+.rag-source-card {
+  margin-top: 14px;
+  padding: 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.rag-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.rag-list div {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+/* 内联引用 */
+.inline-cite {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+
 /* 动画 */
 @keyframes fadeIn {
   from { opacity: 0; }
