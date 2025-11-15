@@ -1,8 +1,10 @@
-/* src/index.css */
+/* src/index.css — cleaned version without custom cursor code */
+
+/* --- 1. Variables (Removed all cursor variables) --- */
 :root {
-  --primary-color: #0078D4;           /* VS Code 蓝 */
-  --primary-color-hover: #005A9E;     /* VS Code hover 蓝 */
-  --primary-text-color: #ffffff;      /* 按钮文字白色 */
+  --primary-color: #0078D4;
+  --primary-color-hover: #005A9E;
+  --primary-text-color: #ffffff;
   --bg-color: #ffffff;
   --bg-color-secondary: #f0f0f0;
   --bg-color-secondary-rgb: 240, 240, 240;
@@ -28,14 +30,13 @@
   --glass-border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* --- 统一的调色板系统 --- */
+/* --- 2. Palette System (unchanged) --- */
 :root {
   --palette-gradient: linear-gradient(135deg, #4e54c8, #8f94fb);
   --palette-primary: #807dba;
   --palette-primary-hover: #6a63a5;
-  --palette-text-color: #ffffff; /* 【新增】为卡片文字定义颜色变量 */
+  --palette-text-color: #ffffff;
 }
-
 [data-palette='red'] {
   --palette-gradient: linear-gradient(135deg, #ff7e5f, #feb47b);
   --palette-primary: #ef3b2c;
@@ -54,22 +55,20 @@
   --palette-primary-hover: #6a63a5;
   --palette-text-color: #ffffff;
 }
-
-/* --- 【核心修改 #1 & #2】INK 配色的默认(暗黑)样式 --- */
 [data-palette='ink'] {
-  --palette-gradient: linear-gradient(135deg, #858585, #a0a0a0); /* 白灰渐变 */
-  --palette-primary: #e0e0e0; /* 亮色图标 */
+  --palette-gradient: linear-gradient(135deg, #858585, #a0a0a0);
+  --palette-primary: #e0e0e0;
   --palette-primary-hover: #ffffff;
-  --palette-text-color: #ffffff; /* 卡片文字为浅色 */
+  --palette-text-color: #1a1a1a;
 }
-
-/* --- 【核心修改 #1 & #2】INK 配色在浅色主题下的覆盖样式 --- */
 [data-theme="light"][data-palette="ink"] {
-  --palette-gradient: linear-gradient(135deg, #737373, #484747); /* 黑灰渐变 */
-  --palette-primary: #1a1a1a; /* 深色图标 */
+  --palette-gradient: linear-gradient(135deg, #737373, #484747);
+  --palette-primary: #1a1a1a;
   --palette-primary-hover: #555555;
+  --palette-text-color: #ffffff;
 }
 
+/* --- 3. Body --- */
 body {
   margin: 0;
   background-color: var(--bg-color);
