@@ -98,22 +98,34 @@ function Map({ onCityClick, theme = "light", mtbData, palette = "red", showProvi
   const [provinceGeojsonData, setProvinceGeojsonData] = useState(null);
   const [activeLayer, setActiveLayer] = useState("province");
 
-  useEffect(() => {
-    fetch("/中国_市.json") // 确保这个文件放在 public 目录下
+useEffect(() => {
+    // 加载市级数据
+    fetch("/中国_市.json")
       .then(res => res.json())
       .then(data => {
-        // 【请确认!】这里的 '中国_市' 是否和您在文件中找到的对象名一致？
-        const geojson = topojson.feature(data, data.objects['中国_市']);
+        // --- 核心修改开始 ---
+        // 1. 动态获取 objects 里的第一个键名（不管它叫 'city' 还是 'layer1' 还是 '中国_市'）
+        const mapName = Object.keys(data.objects)[0]; 
+        
+        if (!mapName) {
+            console.error("TopoJSON 文件格式不对，找不到 objects");
+            return;
+        }
+
+        // 2. 使用获取到的 key 进行转换
+        const geojson = topojson.feature(data, data.objects[mapName]);
+        // --- 核心修改结束 ---
+
         setCityGeojsonData(geojson);
       })
       .catch(error => console.error("加载市级地图数据失败:", error));
 
-    // 加载省级数据
-    fetch("/中国_省.json") // 确保这个文件放在 public 目录下
+    // 加载省级数据 (同理优化)
+    fetch("/中国_省.json")
       .then(res => res.json())
       .then(data => {
-        // 【请确认!】这里的 '中国_省' 是否和您在文件中找到的对象名一致？
-        const geojson = topojson.feature(data, data.objects['中国_省']);
+        const mapName = Object.keys(data.objects)[0]; // 自动抓取 key
+        const geojson = topojson.feature(data, data.objects[mapName]);
         setProvinceGeojsonData(geojson);
       })
       .catch(error => console.error("加载省级地图数据失败:", error));
