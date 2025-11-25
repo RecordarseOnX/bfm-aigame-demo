@@ -1,4 +1,4 @@
-// src/App.jsx
+// src/App.jsx — cleaned version (removed custom cursor logic)
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Map from './components/Map';
 import Drawer from './components/Drawer';
@@ -15,28 +15,32 @@ function App() {
   const [modalMtb, setModalMtb] = useState(null);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
   const [palette, setPalette] = useState(() => localStorage.getItem('palette') || 'purple');
-  const [showProvince, setShowProvince] = useState(true);
+  const [showProvince, setShowProvince] = useState(false);
   const [zoomToCity, setZoomToCity] = useState(null);
   const [isAIPopupOpen, setIsAIPopupOpen] = useState(false);
   const drawerRef = useRef();
   const modalRef = useRef();
 
   const customerPriority = { '大客户': 1, '重点客户': 2, '潜力客户': 3, '小客户': 4 };
+
   const allItems = useMemo(() => {
     const cities = Object.keys(mtbData).map(city => ({ type: 'city', name: city }));
     const mtbs = [];
+
     Object.entries(mtbData).forEach(([city, list]) => {
       list.forEach(mtb => {
         mtbs.push({ type: 'mtb', name: mtb.name, city, data: mtb });
       });
     });
+
     cities.sort((a, b) => a.name.localeCompare(b.name));
     mtbs.sort((a, b) => {
       const priA = customerPriority[a.data.positioning] || 5;
       const priB = customerPriority[b.data.positioning] || 5;
-      if (priA !== priB) { return priA - priB; }
+      if (priA !== priB) return priA - priB;
       return a.name.localeCompare(b.name);
     });
+
     return [...cities, ...mtbs];
   }, []);
 
@@ -45,6 +49,7 @@ function App() {
     const dataForCity = mtbData[cityName];
     setSelectedCityData({ cityName, mtbList: dataForCity || [] });
   };
+
   const handleSearchSelect = (item) => {
     if (item.type === 'city') {
       setZoomToCity(item.name);
@@ -62,15 +67,15 @@ function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // --- 【新增】将 palette 状态同步到 DOM，激活 CSS 变量 ---
   useEffect(() => {
     document.documentElement.setAttribute('data-palette', palette);
     localStorage.setItem('palette', palette);
   }, [palette]);
 
+  // ⚠️ Custom cursor logic removed entirely
+
   const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
 
-  // --- 【修改】加入 'ink' 配色到切换逻辑中 ---
   const togglePalette = () => {
     const order = ['red', 'blue', 'purple', 'ink'];
     setPalette(order[(order.indexOf(palette) + 1) % order.length]);
@@ -94,7 +99,6 @@ function App() {
       <div className="left-bottom-stats">
         {['今年总订单', '本季度总订单'].map((label, idx) => {
           const value = idx === 0 ? totalThisYearOrders : totalThisQuarterOrders;
-          // --- 【修改】移除所有内联样式和 gradientMap ---
           return (
             <div key={label} className="stat-card">
               <div className="stat-label">{label}</div>
@@ -116,11 +120,11 @@ function App() {
 
       <SearchBar allItems={allItems} onSelect={handleSearchSelect} />
 
-      <Map 
-        onCityClick={handleCityClick} 
-        theme={theme} 
+      <Map
+        onCityClick={handleCityClick}
+        theme={theme}
         palette={palette}
-        mtbData={mtbData} 
+        mtbData={mtbData}
         showProvince={showProvince}
         zoomToCity={zoomToCity}
       />
@@ -129,7 +133,7 @@ function App() {
         ref={drawerRef}
         cityData={selectedCityData}
         onClose={() => setSelectedCityData(null)}
-        onMtbClick={(mtb) => setModalMtb(mtb)}
+        onMtbClick={setModalMtb}
       />
 
       <MTBModal
@@ -139,16 +143,14 @@ function App() {
       />
 
       {isAIPopupOpen && (
-        <div 
-          className="popup-overlay" 
+        <div
+          className="popup-overlay"
           onMouseDown={(e) => e.stopPropagation()}
           onClick={() => setIsAIPopupOpen(false)}
         >
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <Sparkles className="popup-icon" size={20} />
-            <p className="popup-text">
-              点击该按钮可通过AI问答快速获取所需信息，并进行互动。
-            </p>
+            <p className="popup-text">点击该按钮可通过AI问答快速获取所需信息，并进行互动。</p>
           </div>
         </div>
       )}

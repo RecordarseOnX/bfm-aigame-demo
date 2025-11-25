@@ -1,10 +1,11 @@
 // src/components/MTBModal.jsx
+
 import React, { useState, forwardRef } from 'react';
-import { X, Cpu, BarChart2, Sparkles } from 'lucide-react';
+import { X, Cpu, BarChart2, Brain } from 'lucide-react';
 import './MTBModal.css';
 
-const formatValue = (value) =>
-  value === null || value === undefined ? '-' : value;
+// --- Helper Functions ---
+const formatValue = (value) => (value === null || value === undefined ? '-' : value);
 
 const calculateGrowth = (current, previous) => {
   if (
@@ -35,6 +36,27 @@ const calculateShare = (orders, total) => {
   return `${Math.round((orders / total) * 100)}%`;
 };
 
+// --- Custom AI Icon Component ---
+const AiSparklesIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+    <path d="M20 2v4"></path>
+    <path d="M22 4h-4"></path>
+    <circle cx="4" cy="20" r="2"></circle>
+  </svg>
+);
+
+
 const MTBModal = forwardRef(({ mtb, onClose }, ref) => {
   const [isHistoryPopupOpen, setIsHistoryPopupOpen] = useState(false);
   const [isAIPopupOpen, setIsAIPopupOpen] = useState(false);
@@ -44,71 +66,74 @@ const MTBModal = forwardRef(({ mtb, onClose }, ref) => {
   const yoyGrowth = calculateGrowth(mtb.thisYearOrders, mtb.lastYearOrders);
   const qoqGrowth = calculateGrowth(mtb.thisQuarterOrders, mtb.lastQuarterOrders);
   const fanucShare = calculateShare(mtb.lastYearOrders, mtb.lastYearDemand);
+  
+  const reportTitles = [
+    `${mtb.name}_2025上半年订单报告`,
+    `${mtb.name}_2024全年订单报告`,
+    `${mtb.name}_2024上半年订单报告`,
+    `${mtb.name}_安装台账(2015-2024)`,
+  ];
 
   return (
     <>
-      {/* Main Modal */}
+      {/* --- Main MTB Data Modal --- */}
       <div className="modal-overlay" ref={ref} onClick={onClose}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <button className="modal-close-button" onClick={onClose}>
+        <div className="popup-content-base mtb-modal__content" onClick={(e) => e.stopPropagation()}>
+          <button className="mtb-modal__close-button" onClick={onClose}>
             <X size={24} />
           </button>
 
           <h3>{mtb.name}</h3>
 
-          <div className="modal-grid">
-            <div className="grid-item">
+          {/* --- 【JSX 修正】恢复了主弹窗的完整内容 --- */}
+          <div className="mtb-modal__grid">
+            <div className="mtb-modal__grid-item">
               <span>客户定位</span>
               <strong>{formatValue(mtb.positioning)}</strong>
             </div>
-
-            <div className="grid-item">
+            <div className="mtb-modal__grid-item">
               <span>上年系统需求总量</span>
               <strong>{formatValue(mtb.lastYearDemand)}</strong>
             </div>
-
-            <div className="grid-item">
+            <div className="mtb-modal__grid-item">
               <span>FANUC 占比 (上年)</span>
               <strong>{fanucShare}</strong>
             </div>
-
-            <div className="grid-item">
+            <div className="mtb-modal__grid-item">
               <span>本年/上年 订单量</span>
-              <div className="growth-details">
-                <strong className={`growth-${yoyGrowth.color}`}>
+              <div className="mtb-modal__growth-details">
+                <strong className={`growth-color--${yoyGrowth.color}`}>
                   {yoyGrowth.text}
                 </strong>
-                <span className="growth-numbers">
+                <span className="mtb-modal__growth-numbers">
                   ({formatValue(mtb.thisYearOrders)}/{formatValue(mtb.lastYearOrders)})
                 </span>
               </div>
             </div>
-
-            <div className="grid-item">
+            <div className="mtb-modal__grid-item">
               <span>本季/上季 订单量</span>
-              <div className="growth-details">
-                <strong className={`growth-${qoqGrowth.color}`}>
+              <div className="mtb-modal__growth-details">
+                <strong className={`growth-color--${qoqGrowth.color}`}>
                   {qoqGrowth.text}
                 </strong>
-                <span className="growth-numbers">
+                <span className="mtb-modal__growth-numbers">
                   ({formatValue(mtb.thisQuarterOrders)}/{formatValue(mtb.lastQuarterOrders)})
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Sections */}
-          <div className="modal-section">
+          <div className="mtb-modal__section">
             <h4>补充信息</h4>
-            <p className="supplementary-info">{formatValue(mtb.supplementaryInfo)}</p>
+            <p className="mtb-modal__supplementary-info">{formatValue(mtb.supplementaryInfo)}</p>
           </div>
 
-          <div className="modal-section">
+          <div className="mtb-modal__section">
             <h4>主要竞品</h4>
-            <div className="tags-container">
+            <div className="mtb-modal__tags-container">
               {mtb.competitorsList?.length
                 ? mtb.competitorsList.map((c) => (
-                    <span key={c} className="tag competitor-tag">
+                    <span key={c} className="mtb-modal__tag mtb-modal__tag--competitor">
                       {c}
                     </span>
                   ))
@@ -116,12 +141,12 @@ const MTBModal = forwardRef(({ mtb, onClose }, ref) => {
             </div>
           </div>
 
-          <div className="modal-section">
+          <div className="mtb-modal__section">
             <h4>主营机床类型</h4>
-            <div className="tags-container">
+            <div className="mtb-modal__tags-container">
               {mtb.machineTypes?.length
                 ? mtb.machineTypes.map((type) => (
-                    <span key={type} className="tag">
+                    <span key={type} className="mtb-modal__tag">
                       {type}
                     </span>
                   ))
@@ -129,31 +154,30 @@ const MTBModal = forwardRef(({ mtb, onClose }, ref) => {
             </div>
           </div>
 
-          <div className="modal-section">
+          <div className="mtb-modal__section">
             <h4>主要终端用户</h4>
-            <div className="tags-container">
+            <div className="mtb-modal__tags-container">
               {mtb.endUsers?.length
                 ? mtb.endUsers.map((user) => (
-                    <span key={user.name} className="tag user-tag">
-                      {user.name} <span className="user-tag-label">#{user.tag}</span>
+                    <span key={user.name} className="mtb-modal__tag mtb-modal__tag--user">
+                      {user.name} <span className="mtb-modal__user-tag-label">#{user.tag}</span>
                     </span>
                   ))
                 : '-'}
             </div>
           </div>
+          {/* --- 恢复结束 --- */}
 
-          {/* Buttons */}
-          <div className="modal-actions">
+          <div className="mtb-modal__actions">
             <button
-              className="secondary-action-button"
+              className="mtb-modal__button--secondary"
               onClick={() => setIsHistoryPopupOpen(true)}
             >
               <BarChart2 size={18} />
               历史报告查看
             </button>
-
             <button
-              className="ai-button"
+              className="mtb-modal__button--ai"
               onClick={() => setIsAIPopupOpen(true)}
             >
               <Cpu size={18} />
@@ -163,121 +187,107 @@ const MTBModal = forwardRef(({ mtb, onClose }, ref) => {
         </div>
       </div>
 
-      {/* History Popup */}
+      {/* --- History (PDF) Popup --- */}
       {isHistoryPopupOpen && (
         <div
-          className="popup-overlay"
+          className="modal-overlay"
           onClick={() => setIsHistoryPopupOpen(false)}
         >
           <div
-            className="popup-content pdf-list-popup"
+            className="popup-content-base history-popup__content"
             onClick={(e) => e.stopPropagation()}
           >
-            <BarChart2 className="popup-icon" size={20} />
-
-            {[
-              '黑白红有限公司_2025上半年',
-              '黑白红有限公司_2024下半年',
-              '黑白红有限公司_2024全年',
-              '黑白红有限公司_2024上半年',
-            ].map((title) => (
-              <div className="pdf-item" key={title}>
-                <div className="pdf-left">
-                  <Sparkles size={22} className="pdf-icon" />
+            {reportTitles.map((title) => (
+              <div className="history-popup__item" key={title}>
+                <div className="history-popup__details">
+                  <div className="history-popup__icon">
+                    <AiSparklesIcon />
+                  </div>
                   <span>{title}</span>
                 </div>
-                <button className="pdf-download-btn">下载</button>
+                <button className="history-popup__download-btn">下载</button>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* AI Dialog Popup */}
+      {/* --- AI Dialog Popup --- */}
       {isAIPopupOpen && (
         <div
-          className="popup-overlay"
+          className="modal-overlay"
           onClick={() => setIsAIPopupOpen(false)}
         >
           <div
-            className="popup-content ai-dialog-wrapper"
+            className="popup-content-base dialog__wrapper"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* 横向布局：用户消息在左侧，AI消息在右侧 */}
-            <div className="horizontal-dialog-container">
-              {/* 用户部分（左侧） */}
-              <div className="user-section">
-                <div className="dialog-section-title user-title">
-                  👤 你（PingLi）
-                </div>
-                <div className="dialog-bubble user-bubble">
-                  黑红白公司去年的销量如何，今年有没有继续增大订单量的搞头？
+            <div className="dialog__header">
+              <div className="dialog__header-icon-wrapper">
+                <Brain size={20} />
+              </div>
+              AI 智能解析：{mtb.name}
+            </div>
+
+            <div className="dialog__flow">
+              <div className="dialog__row dialog__row--user">
+                <div className="dialog__bubble dialog__bubble--user">
+                  {mtb.name}去年的销量如何，今年有没有继续增大订单量的搞头？
                 </div>
               </div>
 
-              {/* AI 部分（右侧） */}
-              <div className="ai-section">
-                <div className="dialog-section-title ai-title">
-                  🤖 AI 智能分析
-                </div>
-                <div className="dialog-bubble ai-bubble">
-                  {/* --- 更RAG式的AI分析正文：强调检索来源的整合 --- */}
+              <div className="dialog__row dialog__row--ai">
+                <div className="dialog__bubble dialog__bubble--ai">
+                  <div className="dialog__bubble-header">
+                    <div className="dialog__bubble-icon">
+                      <AiSparklesIcon />
+                    </div>
+                    <span>AI 智能分析</span>
+                  </div>
                   <p>
-                    基于检索到的历史报告、系统安装台账、内部规划文档，以及外部行业预测信息，我对 <strong>黑红白有限公司</strong> 进行了综合分析。以下是基于RAG（Retrieval-Augmented Generation）机制生成的判断，所有数据均引用自可靠来源：
+                    您好，<strong>小黄仁儿</strong> 。我已经整合了关于 <strong>{mtb.name}</strong> 的多维度信息，包括历史订单、设备台账、客户关系管理（CRM）记录以及外部市场预测，生成了以下分析报告：
                   </p>
-
-                  <h4>📌 1. 去年销量情况（2024）</h4>
-                  <ul>
-                    <li>全年总订单：<strong>325 台</strong> <span className="inline-cite">[来源: 2024全年订单报告]</span></li>
-                    <li>同比增长：<strong>+12.3%</strong>（相较于 2023 年 289 台） <span className="inline-cite">[来源: 2024全年订单报告]</span></li>
-                    <li>上半年：125 台 <span className="inline-cite">[来源: 2024上半年报告]</span></li>
-                    <li>下半年：200 台（环比 +60%） <span className="inline-cite">[来源: 2024下半年报告]</span></li>
-                  </ul>
-
-                  <p>从检索到的季节波动数据看，下半年存在“集中补单”现象，这在汽车零件行业较为常见 <span className="inline-cite">[来源: 行业展望报告]</span>。</p>
-
-                  <h4>📌 2. 合作历史与累计产能</h4>
+                  <h4>📌 1. 历史业绩与稳定性评估（2023-2024）</h4>
                   <p>
-                    该客户 10 年累计安装系统 <strong>1993 台</strong>，平均年复合增长率约 <strong>5.4%</strong> <span className="inline-cite">[来源: 安装台账（2015–2024）]</span>。
+                    根据《2024全年订单报告》，该客户去年总订单量为 <strong>{mtb.lastYearOrders} 台</strong>，相较于 2023 年的 {Math.round(mtb.lastYearOrders / 1.123)} 台，实现了 <strong>+12.3%</strong> 的稳健同比增长 <span className="dialog__inline-cite">[来源: 2024年度报告]</span>。值得注意的是，其订单在下半年有显著提速（环比增长约60%），这与汽车零部件行业“年底集中采购”的季节性趋势相符 <span className="dialog__inline-cite">[来源: 行业季度分析Q4]</span>。
                   </p>
+                  <h4>📌 2. 产能与设备生命周期分析</h4>
                   <p>
-                    检索显示，客户采用“更换旧线 + 新扩产线并行”的策略，整体趋势稳定，无明显衰退 <span className="inline-cite">[来源: 2024下半年扩产规划内部稿]</span>。
+                    《安装台账》显示，该客户在过去十年中累计安装系统已达 <strong>1,993 台</strong>，呈现出约 <strong>5.4%</strong> 的年复合增长率。客户内部推行“旧线改造”与“新线扩产”并行的策略，显示出其业务具有很强的韧性和持续扩张的潜力 <span className="dialog__inline-cite">[来源: CRM客户规划纪要]</span>。数据显示，其一批关键的铣削类设备将在 2025-2026 年进入 7 年的设备更新周期，这预示着潜在的替换需求。
                   </p>
-
-                  <h4>📌 3. 今年是否有扩单空间？（2025 预测）</h4>
+                  <h4>📌 3. 2025 年订单增量潜力预测</h4>
                   <p>
-                    通过整合行业预测与客户设备周期数据，我判断：<br/>
+                    综合所有检索到的信息，我判断：<br/>
                     <strong style={{ fontSize: '15px' }}>
-                      👉 2025 年预计继续小幅增长（+3% ~ +7% 区间）。
+                      👉 {mtb.name} 在 2025 年继续增大订单量的潜力为“中等偏上”，预计增长区间在 +3% 至 +7% 之间。
                     </strong>
                   </p>
-
-                  <p>主要理由是：</p>
+                  <p>主要依据如下：</p>
                   <ul>
-                    <li>客户处于汽车零部件行业，该行业 2025 年预计 <strong>增长 3–5%</strong> <span className="inline-cite">[来源: AutoParts Research 2025展望]</span></li>
-                    <li>其铣削类设备 7 年更新周期在 2025–2026 来临 <span className="inline-cite">[来源: 安装台账]</span></li>
-                    <li>2024 下半年订单偏高，不排除“前置需求”，但仍有持续性 <span className="inline-cite">[来源: 2024下半年报告]</span></li>
+                    <li><strong>宏观驱动：</strong> 权威机构 AutoParts Research 预测，2025 年汽车零部件行业整体将有 <strong>3-5%</strong> 的温和增长 <span className="dialog__inline-cite">[来源: AutoParts Research 2025展望]</span>。</li>
+                    <li><strong>微观需求：</strong> 客户自身的设备更新周期即将来临，这将构成持续且稳定的基础需求。</li>
+                    <li><strong>风险提示：</strong> 2024 年下半年的高订单量可能提前消化了部分 2025 年初的需求，因此 Q1 增速放缓。</li>
                   </ul>
-
-                  <h4>📘 4. 结论</h4>
+                  <h4>📘 4. 结论与建议</h4>
                   <p>
-                    <strong>黑红白公司今年依然有扩单空间，预计规模不大但稳健增长。</strong> 该判断基于上述RAG检索来源的综合生成。
+                    <strong>结论：{mtb.name} 依然是值得重点跟进的高价值客户，今年有稳健的增单空间。</strong> 建议销售团队在 Q4 重点跟进其设备更新计划，以抓住潜在的大额订单机会。
                   </p>
-
-                  {/* --- RAG 来源总结（更结构化） --- */}
-                  <div className="rag-source-card">
-                    <div className="rag-title">── RAG 检索来源总结</div>
-                    <div className="rag-list">
-                      <div>📄 《黑白红有限公司_2024全年订单报告》：年度销量与统计数据</div>
-                      <div>📄 《黑白红有限公司_2024上半年报告》：上半年订单细节</div>
-                      <div>📄 《黑白红有限公司_2024下半年报告》：下半年订单与环比分析</div>
-                      <div>📄 《黑白红有限公司_安装台账（2015–2024）》：累计安装与增长率</div>
-                      <div>📄 《黑白红有限公司_2024下半年扩产规划内部稿》：扩产策略与季节波动</div>
-                      <div>🌐 《汽车零部件行业展望 2025》（AutoParts Research）：行业增长预测</div>
+                  <div className="dialog__rag-card">
+                    <div className="dialog__rag-title">── RAG 检索来源</div>
+                    <div className="dialog__rag-list">
+                      <div>📄 《{mtb.name}_2024全年订单报告》</div>
+                      <div>📄 《{mtb.name}_安装台账 (2015–2024)》</div>
+                      <div>📄 《CRM_客户扩产规划内部纪要_2024.11》</div>
+                      <div>🌐 《汽车零部件行业展望 2025》– AutoParts Research</div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="dialog__input-area">
+              <input type="text" placeholder="继续提问..." className="dialog__input" />
+              <button className="dialog__send-button">发送</button>
             </div>
           </div>
         </div>
